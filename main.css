@@ -1,0 +1,11 @@
+html, 
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+#glCanvas {
+  margin: 20px;
+  border: 2px solid gray;
+}
