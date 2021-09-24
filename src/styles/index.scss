@@ -1,0 +1,17 @@
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/Inter.ttf");
+}
+
+@import "variables";
+@import "scaffolding";
+
+canvas {
+  margin: 20px;
+  border: 2px solid green;
+}
+
+.align {
+  display: flex;
+  flex-direction: row;
+}
