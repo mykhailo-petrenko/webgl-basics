@@ -6,100 +6,29 @@ import '@/styles/index.scss';
 
 {
   const vs = `#version 300 es
-	  precision highp float;
+	  precision mediump float;
     
     in vec4 a_position;
+    in vec2 a_texcoord;
 
-    uniform float numInstances;
-
-    out float v_id;
+    out vec2 v_texcoord;
 
     void main() {
-      
-      gl_Position = vec4(0.0, 0.0, 0.0, 1.0);
-      gl_Position.x = (float(gl_InstanceID % 512) / 256.0) - 1.0;
-      gl_Position.y = ((float(gl_InstanceID) / (512.0)) / 256.0) - 1.0;
-      gl_PointSize = 1.0;
-      
-      v_id = float(gl_InstanceID) / numInstances;
+      gl_Position = a_position;
+
+      v_texcoord = a_texcoord;
     }
   `;
 
   const fs = `#version 300 es
-    precision highp float;
+    precision mediump float;
 
     uniform float time;
-    
-    in float v_id;
-
-    out vec4 outColor;
-    
-    void main() {
-      //outColor = vec4(1.0, 0.0, 0.0, 1.0);
-      outColor = vec4(v_id, 1.0 - v_id, 0.0, 1.0);
-    }
-  `;
-
-  const canvas = document.getElementById('canvasgl');
-  const gl = canvas.getContext('webgl2');
-  gl.getExtension('ANGLE_instanced_arrays');
-
-  const programInfo = twgl.createProgramInfo(gl, [vs, fs]);
-
-  const numInstances = 512*512;
-
-  const arrays = {
-    a_position: {
-      numComponents: 2,
-      data: [
-        0.0, 0.0,
-      ]
-    },
-  };
-
-  const uniforms = {
-    time: 0,
-    numInstances: numInstances,
-  };
-
-
-  const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
-  const vertexArrayInfo = twgl.createVertexArrayInfo(gl, programInfo, bufferInfo);
-
-  const render = (time) => {
-
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-
-    gl.clear(gl.COLOR_BUFFER_BIT);
-
-    uniforms.time = time * 0.1;
-
-    gl.useProgram(programInfo.program);
-
-    twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);
-    twgl.setUniforms(programInfo, uniforms);
-
-    twgl.drawBufferInfo(gl, vertexArrayInfo, gl.POINTS, vertexArrayInfo.numElements, 0, numInstances);
-
-    requestAnimationFrame(render);
-  };
-
-  requestAnimationFrame(render);
-}
-
-
-{
-  const vs = `#version 300 es
-	  precision highp float;
-    
-    in vec4 a_position;
 
     uniform sampler2D u_texture;
-    uniform float tilePixels;
-    uniform float numRows;
 
-    out float height;
-    
+    in vec2 v_texcoord;
+
     float unpack(vec4 h) {
       // unpack data to range [-32768, 32768], the range in the raw data
       // "* 255." is necessary because each the GPU reads each channel as a range from 0 - 1
@@ -107,47 +36,132 @@ import '@/styles/index.scss';
       return (h.r * 256. + h.g + h.b / 256.) * 255. - 32768.;
     }
 
+    out vec4 outColor;
+    
     void main() {
-      float id = float(gl_InstanceID);
-      float Y = (2.0 * id / numRows) - 1.0;
-      
-      gl_Position = vec4(0.0, Y, 0.0, 1.0);
-      gl_PointSize = 1.0;
-      
-      //vec2 uv = vec2(0.0, Y * 0.5 + 0.5);
-      //vec4 color = texture(u_texture, uv);
-      
-      float heightMax = 0.0;
-      int N = int(tilePixels);
-      
-      for (int x = 0; x < N; x++) { 
-        vec4 color = texelFetch(u_texture, ivec2(x, gl_InstanceID), 0);
-        heightMax = max(heightMax, unpack(color));
-      }
-      height = heightMax;
+      vec4 tex_color = texture(u_texture, v_texcoord);
+      outColor = tex_color;
+    }
+  `;
+
+  const canvas = document.getElementById('canvasgl');
+  const gl = canvas.getContext('webgl2');
+
+  const programInfo = twgl.createProgramInfo(gl, [vs, fs]);
+
+  const texture = twgl.createTexture(gl, {
+    src: '/assets/4405.png',
+    target: gl.TEXTURE_2D,
+    mag: gl.NEAREST,
+    min: gl.NEAREST,
+    format: gl.RGBA,
+    level: 0,
+  });
+
+
+  const arrays = {
+    a_position: {
+      numComponents: 2,
+      data: [
+        -1.0, 1.0,
+        1.0, 1.0,
+        -1.0, -1.0,
+
+        1.0, 1.0,
+        1.0, -1.0,
+        -1.0, -1.0,
+      ]
+    },
+    a_texcoord: {
+      numComponents: 2,
+      data: [
+        0, 0,
+        1, 0,
+        0, 1,
+
+        1, 0,
+        1, 1,
+        0, 1,
+      ]
+    },
+  };
+
+  const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
+
+  const render = (time) => {
+    // twgl.resizeCanvasToDisplaySize(canvas);
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+
+    gl.enable(gl.BLEND);
+    gl.blendEquation(gl.MAX);
+    gl.blendFunc(gl.ONE, gl.ONE);
+
+    const uniforms = {
+      time: time * 0.1,
+      u_texture: texture,
+    };
+
+    gl.useProgram(programInfo.program);
+
+    twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);
+    twgl.setUniformsAndBindTextures(programInfo, uniforms);
+    twgl.drawBufferInfo(gl, bufferInfo); //, gl.POINTS
+
+    requestAnimationFrame(render);
+  };
+
+  requestAnimationFrame(render);
+}
+
+{
+  const vs = `#version 300 es
+    precision mediump float;
+    in vec4 a_position;
+    in vec2 a_texcoord;
+
+    out vec2 v_texcoord;
+
+    void main() {
+      gl_Position = a_position;
+
+      v_texcoord = a_texcoord;
     }
   `;
 
   const fs = `#version 300 es
     precision mediump float;
 
-    in float height;
+    uniform float time;
+
+    uniform sampler2D u_texture;
+
+    in vec2 v_texcoord;
+
+    float unpack(vec4 h) {
+      // unpack data to range [-32768, 32768], the range in the raw data
+      // "* 255." is necessary because each the GPU reads each channel as a range from 0 - 1
+      // and we want it in a range from 0-255, as it was encoded in the raster image
+      return (h.r * 256. + h.g + h.b / 256.) * 255. - 32768.;
+    }
+
 
     out vec4 outColor;
-
+    
     void main() {
-      outColor.r = height;
+      vec4 tex_color = texture(u_texture, v_texcoord);
+      float h = unpack(tex_color);
+      outColor.r = h;
     }
   `;
 
+  // max 171.4453125
+  const W = 3;
+  const H = 3;
 
-  const W = 1;
-  const H = 512;
-
-  const uniforms = {
-    tilePixels: 512,
-    numRows: 512,
-  };
+  // // max 186.3125
+  // const W = 512;
+  // const H = 512;
 
   const canvas = document.getElementById('canvasbufer');
   const gl = canvas.getContext('webgl2');
@@ -157,33 +171,44 @@ import '@/styles/index.scss';
 
   const programInfo = twgl.createProgramInfo(gl, [vs, fs]);
 
-  let texture;
-  // = twgl.createTexture(gl, {
-  //   src: '/assets/4405.png',
-  //   target: gl.TEXTURE_2D,
-  //   mag: gl.NEAREST,
-  //   min: gl.NEAREST,
-  //   format: gl.RGBA,
-  //   level: 0,
-  // });
+  const texture = twgl.createTexture(gl, {
+    src: '/assets/4405.png',
+    target: gl.TEXTURE_2D,
+    mag: gl.NEAREST,
+    min: gl.NEAREST,
+    format: gl.RGBA,
+    level: 0,
+  });
 
-  const textureImage = new Image();
-  textureImage.src = '/assets/4405.png';
-
-  textureImage.onload = () => {
-    console.log('Hello I loaded');
-  };
 
   const arrays = {
     a_position: {
       numComponents: 3,
       data: [
-        0.0, 0.0, 0,
+        -1.0, 1.0, 0,
+        1.0, 1.0, 0,
+        -1.0, -1.0, 0,
+
+        1.0, 1.0, 0.0,
+        1.0, -1.0, 0,
+        -1.0, -1.0, 0,
+      ]
+    },
+    a_texcoord: {
+      numComponents: 2,
+      data: [
+        0, 0,
+        1, 0,
+        0, 1,
+
+        1, 0,
+        1, 1,
+        0, 1,
       ]
     },
   };
 
-  const tex_options = {
+  const tex_options =     {
     /**
      * empty textrure of Width x Protococols
      * will be rendered with protolol colors per row
@@ -209,14 +234,14 @@ import '@/styles/index.scss';
 
   const attachments = [
     {
-      attachmentPoint: gl.COLOR_ATTACHMENT0,
+      //@ts-ignore
+      attach    : gl.COLOR_ATTACHMENT0,
       attachment: stack_y_norm_texture,
-      target: gl.TEXTURE_2D,
+      target    : gl.TEXTURE_2D,
     },
   ];
 
   const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
-  const vertexArrayInfo = twgl.createVertexArrayInfo(gl, programInfo, bufferInfo);
 
   const render = (time)  => {
     gl.viewport(0, 0, W, H);
@@ -224,8 +249,14 @@ import '@/styles/index.scss';
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    uniforms.time = time * 0.1;
-    uniforms.u_texture = texture;
+    gl.enable(gl.BLEND);
+    gl.blendEquation(gl.MAX);
+    gl.blendFunc(gl.ONE, gl.ONE);
+
+    const uniforms = {
+      time: time * 0.1,
+      u_texture: texture,
+    };
 
     const frameBuffer = twgl.createFramebufferInfo(gl, attachments, W, H);
 
@@ -233,8 +264,7 @@ import '@/styles/index.scss';
 
     twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);
     twgl.setUniformsAndBindTextures(programInfo, uniforms);
-
-    twgl.drawBufferInfo(gl, vertexArrayInfo, gl.POINTS, vertexArrayInfo.numElements, 0, uniforms.numRows);
+    twgl.drawBufferInfo(gl, bufferInfo, gl.TRIANGLES, undefined, undefined); //, gl.POINTS
 
     // requestAnimationFrame(render);
 
@@ -258,17 +288,9 @@ import '@/styles/index.scss';
     console.log('max', max);
   };
 
-  textureImage.decode()
-    .then(() => {
-      texture = twgl.createTexture(gl, {
-        src: textureImage,
-        target: gl.TEXTURE_2D,
-        mag: gl.NEAREST,
-        min: gl.NEAREST,
-        format: gl.RGBA,
-        level: 0,
-      });
-      requestAnimationFrame(render);
-    });
+  setTimeout(() => {
+
+    requestAnimationFrame(render);
+  }, 1000);
 
 }
