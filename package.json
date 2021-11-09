@@ -40,6 +40,7 @@
     "webpack-merge": "^5.7.3"
   },
   "dependencies": {
+    "gl-matrix": "^3.4.3",
     "install": "^0.13.0",
     "npm": "^7.23.0",
     "twgl.js": "^4.19.2"
