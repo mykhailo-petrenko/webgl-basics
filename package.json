@@ -41,6 +41,7 @@
   },
   "dependencies": {
     "gl-matrix": "~3.4.3",
+    "guify": "^0.15.0",
     "install": "~0.13.0",
     "npm": "~7.23.0",
     "twgl.js": "~4.19.2"

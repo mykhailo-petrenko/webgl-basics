@@ -1,5 +1,12 @@
 import * as twgl from 'twgl.js';
 import { mat4, vec3 } from 'gl-matrix';
+import {guify} from 'guify';
+
+var gui = new guify({
+  title: 'Some Title',
+  align: 'right',
+  theme: 'dark'
+});
 
 // Test import of styles
 import '@/styles/index.scss';
@@ -52,7 +59,7 @@ import '@/styles/index.scss';
 
   const cameraMatrix = mat4.create();
   mat4.translate(cameraMatrix, cameraMatrix, vec3.fromValues(0, 0, 30));
-  mat4.rotateY(cameraMatrix, cameraMatrix, 0.1);
+  // mat4.rotateY(cameraMatrix, cameraMatrix, 0.1);
 
   const viewMatrix = mat4.create();
   mat4.invert(viewMatrix, cameraMatrix);
@@ -68,45 +75,53 @@ import '@/styles/index.scss';
   // mat4.rotateY(matrix, matrix, Math.PI + 0.2);
 
   const uniforms = {
+    // @TODO: object movement matrix
     u_projection_matrix: projectionMatrix,
     u_view_matrix: viewMatrix
   };
 
-  // let projectionMatrix = mat4.create();
-  // const fov = 80 / (2 * Math.PI);
-  // const aspect = canvas.clientWidth / canvas.clientHeight;
-  // const zNear = 1;
-  // const zFar = 1000;
+  const params = {
+    radius: 0,
+    rotation: 0,
+  };
 
-  // mat4.perspective(projectionMatrix, fov, aspect, zNear, zFar);
-
-  // const radius = 150;
-  // let cameraOffset = vec3.fromValues(0, 0, radius);
-  // let cameraMatrix = mat4.create();
-  // let viewMatrix = mat4.create();
-
-  // mat4.rotateY(cameraMatrix, cameraMatrix, 0);
-  // mat4.translate(cameraMatrix, cameraMatrix, cameraOffset);
-
-  // mat4.invert(viewMatrix, cameraMatrix);
-
-  // let viewProjection = mat4.create();
-  // mat4.multiply(viewProjection, projectionMatrix, viewMatrix);
-
-  const render = (time) => {
-    let angle = Math.sin(time * 0.001) * 0.6;
-    let angle2 = Math.cos(time * 0.001) * 0.5;
-
-    // Camera Rotation
-    let localProjectionMatrix = mat4.create();
-    mat4.rotateY(localProjectionMatrix, projectionMatrix, angle2);
-    uniforms.u_projection_matrix = localProjectionMatrix;
+  const rotateWorld = () => {
+    const angle = params.rotation * Math.PI / 180;
 
     // World Tilt
-    let locaViewMatrix = mat4.create();
-    // mat4.rotateY(locaViewMatrix, viewMatrix, angle);
-    mat4.rotateX(locaViewMatrix, viewMatrix, angle);
-    uniforms.u_view_matrix = locaViewMatrix;
+    let localProjection = mat4.create();
+
+    mat4.copy(localProjection, projectionMatrix);
+    mat4.translate(localProjection, localProjection, vec3.fromValues(0, 0, params.radius));
+    mat4.rotateY(localProjection, localProjection, angle);
+
+    uniforms.u_projection_matrix = localProjection;
+  };
+
+
+  gui.Register({
+    type: 'range',
+    label: 'Radius',
+    min: 0, max: 100,
+    precision: 1,
+    onChange: (data) => {
+      params.radius = -data;
+      rotateWorld();
+    }
+  });
+
+  gui.Register({
+    type: 'range',
+    label: 'Radius',
+    min: 0, max: 360,
+    precision: 1,
+    onChange: (data) => {
+      params.rotation = data;
+      rotateWorld();
+    }
+  });
+
+  const render = () => {
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.clear(gl.COLOR_BUFFER_BIT);
