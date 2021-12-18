@@ -4,11 +4,13 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const PrettierPlugin = require('prettier-webpack-plugin')
 const ESLintPlugin = require('eslint-webpack-plugin')
 
+const babelConfig = require("./.babelrc.js");
+
 const paths = require('./paths')
 
 module.exports = {
   // Where webpack looks to start building the bundle
-  entry: [paths.src + '/index.js'],
+  entry: [paths.src + '/index.ts'],
 
   // Where webpack outputs the assets and bundles
   output: {
@@ -58,6 +60,11 @@ module.exports = {
   // Determine how modules within the project are treated
   module: {
     rules: [
+      {
+        test: /\.(ts|tsx)$/,
+        use: [{ loader: "babel-loader", options: babelConfig }, "ts-loader"],
+        exclude: /node_modules/,
+      },
       // JavaScript: Use Babel to transpile JavaScript files
       { test: /\.js$/, use: ['babel-loader'] },
 
