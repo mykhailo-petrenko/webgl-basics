@@ -9,7 +9,11 @@
     "moduleResolution": "node",
     "sourceMap": true,
     "allowSyntheticDefaultImports": true, // Necessary for default importing Phaser to pick up types properly
-    "lib": ["dom", "esnext"]
+    "lib": ["dom", "esnext"],
+    "paths": {
+      "@/*": ["./src/*"],
+      "~/*": ["./src/*"]
+    }
   },
   "include": ["src/**/*", "typings/**/*"]
 }
