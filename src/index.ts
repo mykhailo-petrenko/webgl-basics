@@ -5,4 +5,6 @@
 
 // import './_archive/07_effective_tile_loading_experiments';
 
-import './_archive/08_ready_for_scene_graph.ts';
+// import './_archive/08_ready_for_scene_graph.ts';
+
+import './solar-system/index';
