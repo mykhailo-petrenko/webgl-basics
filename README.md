@@ -14,7 +14,7 @@
 Add some Node and SceneNode class prototypes. Goal is to create Screen Tree structure to apply transformation to group of obejct hierarchically.
 Beneath the Node and ScreenNode please see the simple render code which are ready to further decomposition.
 
-![08_ready_for_scene_graph preview](public/08_ready_for_scene_graph.gif)
+![08_scene_graph_poc](public/08_scene_graph_poc.gif)
 
 ## Installation
 
