@@ -5,7 +5,6 @@ import {mat4, vec3} from 'gl-matrix';
 import { Render } from './Render';
 import { SolarSystem, Sun, Earth, Moon, DebugCube, EarthSystem } from './SolarScene';
 import { Camera } from './Camera';
-import { SceneNode } from './Scene';
 
 
 const canvas = document.getElementById('canvasLeft') as HTMLCanvasElement;

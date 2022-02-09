@@ -1,7 +1,7 @@
 import { mat4, vec3} from "gl-matrix";
 import * as twgl from 'twgl.js'
 
-import { createSphereVertices, createCubeVertices } from '@/helers/primitivesFactory';
+import { createSphereVertices, createCubeVertices } from './helpers/primitivesFactory';
 
 import { SceneNode } from "./Scene";
 

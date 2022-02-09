@@ -1,11 +1,10 @@
-import { createSphereVertices } from "@/helers/primitivesFactory";
 import { mat4, vec3} from "gl-matrix";
 import * as twgl from "twgl.js";
 
 export class Node {
   parent: Node | null = null;
   child: Node[] = [];
-  
+
   public setParent(parent: Node): void {
     if (this.parent) {
       this.parent.removeChild(this);
@@ -70,7 +69,7 @@ export class SceneNode extends Node {
 
   public translate(translation: vec3): void {
     this.tranlation = translation;
-   
+
     this.updateLocalMatrix();
   }
 

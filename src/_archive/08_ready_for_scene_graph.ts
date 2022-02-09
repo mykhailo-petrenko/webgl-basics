@@ -3,11 +3,11 @@ import '@/styles/index.scss';
 import { mat4, vec3} from "gl-matrix";
 import * as twgl from 'twgl.js'
 
-import { createSphereVertices, createCubeVertices } from '@/helers/primitivesFactory';
+import { createSphereVertices, createCubeVertices } from '@/_archive/09_solar-system/helpers/primitivesFactory';
 
 /**
  * Scene Graph POC
- * 
+ *
  * useful links:
  * - https://learnopengl.com/Guest-Articles/2021/Scene/Scene-Graph
  * - https://webglfundamentals.org/webgl/lessons/webgl-scene-graph.html
@@ -19,7 +19,7 @@ import { createSphereVertices, createCubeVertices } from '@/helers/primitivesFac
 class Node {
   parent: Node | null = null;
   child: Node[] = [];
-  
+
   public setParent(parent: Node): void {
     if (this.parent) {
       this.parent.removeChild(this);
@@ -125,13 +125,13 @@ void main() {
 
   const bufferInfoCube = twgl.createBufferInfoFromArrays(gl, cube);
   const bufferInfoSphere = twgl.createBufferInfoFromArrays(gl, sphere);
- 
+
 
   const viewMatrix = mat4.create();
   mat4.lookAt(
-    viewMatrix, 
-    vec3.fromValues(0, 0, -60), 
-    vec3.fromValues(0,0,0), 
+    viewMatrix,
+    vec3.fromValues(0, 0, -60),
+    vec3.fromValues(0,0,0),
     vec3.fromValues(0,1,0)
   );
 
@@ -181,11 +181,11 @@ void main() {
 
     mat4.multiply(localSphere, localSphere, rotation);
     mat4.multiply(localSphere, world, localSphere);
-    
+
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    
+
     uniforms.u_world = localSphere;
     draw(gl, bufferInfoSphere, uniforms);
 
