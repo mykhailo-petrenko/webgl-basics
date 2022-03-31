@@ -2,7 +2,7 @@
   "compilerOptions": {
     "allowJs": true,
     "checkJs": false,
-    "strict": true,
+    "strict": false,
     "strictPropertyInitialization": false,
     "module": "es6",
     "target": "ESNext",

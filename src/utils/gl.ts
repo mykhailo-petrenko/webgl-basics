@@ -1,6 +1,12 @@
 
+/**
+ * Create WebGL2 rendering context
+ * 
+ * @param elementId {string}
+ * @returns {WebGL2RenderingContext}
+ */
 export function create(elementId: string): WebGL2RenderingContext {
-  const canvas = document.getElementById('canvasLeft') as HTMLCanvasElement;
+  const canvas = document.getElementById(elementId) as HTMLCanvasElement;
   const gl = canvas.getContext('webgl2');
 
   if (!gl) {
@@ -10,6 +16,10 @@ export function create(elementId: string): WebGL2RenderingContext {
   return gl;
 }
 
+/**
+ * 
+ * @param gl {WebGL2RenderingContext}
+ */
 export function init(gl: WebGL2RenderingContext): void {
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 

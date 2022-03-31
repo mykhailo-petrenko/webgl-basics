@@ -9,4 +9,10 @@ import '@/styles/index.scss';
 // import './_archive/08_ready_for_scene_graph.ts';
 // import './_archive/solar-system/index';
 
-import './quaternions';
+// import './quaternions';
+
+// Apply cubemap texture to the cube
+import './cubemap';
+
+// Use cubemap as an skybox
+import './skybox';
