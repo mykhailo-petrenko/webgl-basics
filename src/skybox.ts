@@ -135,12 +135,19 @@ function loadCubemapSkybox(gl: WebGL2RenderingContext): WebGLTexture {
   return twgl.createTexture(gl, {
     target: gl.TEXTURE_CUBE_MAP,
     src: [
-      '/assets/cubemap/skybox+x-right.png',
-      '/assets/cubemap/skybox-x-left.png',
-      '/assets/cubemap/skybox+y-up.png',
-      '/assets/cubemap/skybox-y-down.png',
-      '/assets/cubemap/skybox+z-front.png',
-      '/assets/cubemap/skybox-z-back.png',
+      // '/assets/cubemap/skybox+x-right.png',
+      // '/assets/cubemap/skybox-x-left.png',
+      // '/assets/cubemap/skybox+y-up.png',
+      // '/assets/cubemap/skybox-y-down.png',
+      // '/assets/cubemap/skybox+z-front.png',
+      // '/assets/cubemap/skybox-z-back.png',
+      // https://opengameart.org/content/space-skybox-1
+      '/assets/cubemap/space_ft.png',
+      '/assets/cubemap/space_bk.png',
+      '/assets/cubemap/space_up.png',
+      '/assets/cubemap/space_dn.png',
+      '/assets/cubemap/space_rt.png',
+      '/assets/cubemap/space_lf.png',
     ],
   });
 }
