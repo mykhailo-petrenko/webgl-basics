@@ -1,4 +1,4 @@
-import '@/styles/index.scss';
+// import '@/styles/index.scss';
 
 // @TODO: to Deal with camera rotation (because now worlds rotates)
 // import './_archive/06_lookAt_and_camera_rotation';
@@ -11,8 +11,10 @@ import '@/styles/index.scss';
 
 // import './quaternions';
 
+import './_archive/10_triangle_strip';
+
 // Apply cubemap texture to the cube
-import './cubemap';
+// import './cubemap';
 
 // Use cubemap as an skybox
-import './skybox';
+// import './skybox';

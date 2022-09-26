@@ -24,6 +24,11 @@ Beneath the Node and ScreenNode please see the simple render code which are read
 
 ![08_scene_graph_poc](public/08_scene_graph_poc.gif)
 
+
+### 10_triangle_strip
+![10_triangle_strip.png](public/10_triangle_strip.png)
+
+
 ## Installation
 
 ```bash
