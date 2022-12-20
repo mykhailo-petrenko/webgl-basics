@@ -11,7 +11,9 @@
 
 // import './quaternions';
 
-import './_archive/10_triangle_strip';
+// import './_archive/10_triangle_strip';
+
+import './_archive/11_z_buffer_test';
 
 // Apply cubemap texture to the cube
 // import './cubemap';
